@@ -1281,13 +1281,63 @@
 **Answer:**
 
 - Screenshot
-
-  `Put your screenshot in here`
+  ![image](https://github.com/user-attachments/assets/d4366fec-6d4c-4ce4-8334-5526832005e5)
 
 - Configuration
+	di dementor:
+  ```
+	apt-get update && apt-get install nginx
+	
+	touch /etc/nginx/sites-available/laravel_lb
+	
+	nano /etc/nginx/sites-available/laravel_lb
+	
+	upstream laravel {
+	    	server 10.154.6.4:8001;
+	    	server 10.154.6.3:8002;
+	    	server 10.154.6.14:8003;
+	}
+	
+	server {
+	    	listen 80;
+	    	server_name ravenclaw.hogwarts.C30.com;
+	
+	    	location / {
+	 				proxy_pass http://laravel;
+					proxy_set_header Host $host;
+					proxy_set_header X-Real-IP $remote_addr; 
+					proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; proxy_set_header X-Forwarded-Proto $scheme;
+	    	}
+          location /app1/{
+                proxy_bind 10.154.6.4
+                proxy_pass http://10.154.6.4
+        }
+        location /app2/{
+                proxy_bind 10.154.6.3
+                proxy_pass http://10.154.6.3
+        }
+        location /app3/{
+                proxy_bind 10.154.6.14
+                proxy_pass http://10.154.6.14
+        }
 
-  `Put your configuration in here`
+				  error_log /var/log/nginx/lb_error.log;
+				  access_log /var/log/nginx/lb_access.log;
+	}
+	
+	unlink /etc/nginx/sites-enabled/default
+	
+	ln -s /etc/nginx/sites-available/laravel_lb /etc/nginx/sites-enabled/
+	
+	service nginx restart
+  ```
+	arahin dementor ke dns, arahin ravenclaw ke dns, arahin client ke dns
 
+	di client
+	```
+	curl http://ravenclaw.hogwarts.C30.com
+  ```
+ 	atau testing dengan cara seperti no 16 tetapi ke load balancer untuk melihat hasil htop
 - Explanation
 
   `Put your explanation in here`
