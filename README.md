@@ -1235,9 +1235,8 @@
   ab -n 100 -c 10 -p ~/soal16.json -T application/json http://10.154.6.4:8001/api/auth/login
   ```
 
-- Explanation
-
-  `Put your explanation in here`
+- Explanation <br>
+	login dikirimkan dengan mengirimkan username dan password yang telah di-register sebelumnya.
 
 <br>
 
@@ -1266,9 +1265,8 @@
 	ab -n 100 -c 10 -H "Authorization: Bearer $TOKEN" http://10.154.6.4:8001/api/me
   ```
 
-- Explanation
-
-  `Put your explanation in here`
+- Explanation <br>
+	Request ke endpoint /me didapatkan dengan menggunakan token yang didapat setelah login. Token ini dikirimkan pada bagian authorization.
 
 <br>
 
@@ -1331,16 +1329,14 @@
 	
 	service nginx restart
   ```
-	arahin dementor ke dns, arahin ravenclaw ke dns, arahin client ke dns
-
 	di client
 	```
+ 	echo nameserver 10.154.3.3 > /etc/resolv.conf
 	curl http://ravenclaw.hogwarts.C30.com
   ```
  	atau testing dengan cara seperti no 16 tetapi ke load balancer untuk melihat hasil htop
-- Explanation
-
-  `Put your explanation in here`
+- Explanation <br>
+  Di dementor
 
 <br>
 
