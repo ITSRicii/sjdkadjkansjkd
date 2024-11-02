@@ -1358,8 +1358,34 @@ sebanyak tiga percobaan dan lakukan analisis testing menggunakan apache benchmar
   `Put your screenshot in here`
 
 - Configuration
-
-  `Put your configuration in here`
+  ```
+  cat <<EOL > /etc/php/8.0/fpm/pool.d/laravel.conf
+	[laravel_site]
+	user = laravel_user
+	group = laravel_user
+	listen = /var/run/php8.0-fpm-laravel-site.sock
+	listen.owner = www-data
+	listen.group = www-data
+	php_admin_value[disable_functions] = exec,passthru,shell_exec,system
+	php_admin_flag[allow_url_fopen] = off
+	
+	; Choose how the process manager will control the number of child processes.
+	
+	pm = dynamic
+	pm.max_children = 5
+	pm.start_servers = 2
+	pm.min_spare_servers = 1
+	pm.max_spare_servers = 3
+	pm.process_idle_timeout = 10s
+	
+	;contoh diatas konfigurasi untuk mengatur jumalh proses PHP-FPM yang berjalan
+	EOL
+	
+	groupadd laravel_user
+	useradd -g laravel_user laravel_user
+	
+	service php8.0-fpm restart
+  ```
 
 - Explanation
 
