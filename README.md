@@ -1336,7 +1336,7 @@
   ```
  	atau testing dengan cara seperti no 16 tetapi ke load balancer untuk melihat hasil htop
 - Explanation <br>
-  Di dementor
+  Di dementor setup nginx agar menerapkan proxy bind dan lakukan load balancer agar membagi beban ke tiga worker
 
 <br>
 
