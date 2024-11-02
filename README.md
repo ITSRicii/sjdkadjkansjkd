@@ -1129,7 +1129,7 @@
 	
 	cp .env.example .env
 	
-	nano env
+	nano .env
 	
 	edit bagian
 	DB_CONNECTION=mysql
@@ -1177,9 +1177,8 @@
 	service nginx restart
   ```
 
-- Explanation
-
-  `Put your explanation in here`
+- Explanation <br>
+	Letakkan file laravel dari github ke /var/www. Lalu setup config pada nginx untuk deploy website.
 
 <br>
 
@@ -1353,13 +1352,14 @@ sebanyak tiga percobaan dan lakukan analisis testing menggunakan apache benchmar
 
 **Answer:**
 
-- Screenshot
-
-  `Put your screenshot in here`
+- Screenshot <br>
+![image](https://github.com/user-attachments/assets/d30cb331-c863-4d2e-ba96-11040db37fb5)
+![image](https://github.com/user-attachments/assets/79ae0332-1054-4fac-8bca-b4e51f170688)
+![image](https://github.com/user-attachments/assets/3543a1b7-50d8-4981-a723-432e699c3b0e)
 
 - Configuration
   ```
-  cat <<EOL > /etc/php/8.0/fpm/pool.d/laravel.conf
+	cat <<EOL > /etc/php/8.0/fpm/pool.d/laravel.conf
 	[laravel_site]
 	user = laravel_user
 	group = laravel_user
@@ -1385,12 +1385,43 @@ sebanyak tiga percobaan dan lakukan analisis testing menggunakan apache benchmar
 	useradd -g laravel_user laravel_user
 	
 	service php8.0-fpm restart
+	
+	cat <<EOL > /etc/nginx/sites-available/implementasi
+	server {
+	
+	    listen 8001;
+	
+	    root /var/www/laravel-jarkom-modul-3/public;
+	
+	    index index.php index.html index.htm;
+	    server_name _;
+	
+	    location / {
+	            try_files \$uri \$uri/ /index.php?\$query_string;
+	    }
+	
+	    # pass PHP scripts to FastCGI server
+	    location ~ \.php$ {
+	    include snippets/fastcgi-php.conf;
+	    fastcgi_pass unix:/var/run/php8.0-fpm-laravel-site.sock;
+	    }
+	
+	location ~ /\.ht {
+	            deny all;
+	    }
+	
+	    error_log /var/log/nginx/implementasi_error.log;
+	    access_log /var/log/nginx/implementasi_access.log;
+	}
+	EOL
+	chown -R laravel_user:laravel_user /var/www/laravel-jarkom-modul-3/storage
+	chmod -R 775 /var/www/laravel-jarkom-modul-3/storage
+	service nginx restart
   ```
 
-- Explanation
-
-  `Put your explanation in here`
-
+- Explanation <br>
+	Set config php-fpm pada setiap worker di /etc/php/8.0/fpm/pool.d/laravel.conf. Pada setiap percobaan, ubah max_children, start_servers, min_spare_servers, dan max_spare_servers.
+  
 <br>
 
 ## Soal 20
@@ -1401,18 +1432,56 @@ sebanyak tiga percobaan dan lakukan analisis testing menggunakan apache benchmar
 
 **Answer:**
 
-- Screenshot
-
-  `Put your screenshot in here`
+- Screenshot <br>
+	![image](https://github.com/user-attachments/assets/f4f3577b-6493-4b8b-b822-bf2fe104b91d)
+	![image](https://github.com/user-attachments/assets/a8a71ad5-3e43-496a-8777-a87dabc17aa4)
 
 - Configuration
 
-  `Put your configuration in here`
+  ```
+  cat <<EOL > /etc/nginx/sites-available/laravel_lb
+	upstream backend  {
+	least_conn;
+	server 10.154.6.4:8001;
+	server 10.154.6.3:8002;
+	server 10.154.6.14:8003;
+	}
+	
+	server {
+	  listen 80;
+	  server_name ravenclaw.hogwarts.C30.com;
+	
+	          location / {
+	                  proxy_pass http://backend;
+	                  proxy_set_header        X-Real-IP \$remote_addr;
+	                  proxy_set_header        X-Forwarded-For \$proxy_add_x_forwarded_for;
+	                  proxy_set_header        Host \$http_host;
+	          }
+	
+	        location /app1/{
+	                proxy_bind 10.154.6.4;
+	                proxy_pass http://10.154.6.4;
+	        }
+	        location /app2/{
+	                proxy_bind 10.154.6.3;
+	                proxy_pass http://10.154.6.3;
+	        }
+	        location /app3/{
+	                proxy_bind 10.154.6.14;
+	                proxy_pass http://10.154.6.14;
+	        }
+	
+	  error_log /var/log/nginx/lb_error.log;
+	  access_log /var/log/nginx/lb_access.log;
+	}
+	EOL
+	unlink /etc/nginx/sites-enabled/default
+	ln -s /etc/nginx/sites-available/laravel_lb /etc/nginx/sites-enabled/
+	service nginx restart
+  ```
 
-- Explanation
-
-  `Put your explanation in here`
-
+- Explanation <br>
+	Tambahkan bagian ```least_conn``` untuk mengonfigurasi penggunaan least connection. 
 <br>
   
 ## Problems
