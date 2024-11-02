@@ -1484,6 +1484,7 @@ sebanyak tiga percobaan dan lakukan analisis testing menggunakan apache benchmar
 	Tambahkan bagian ```least_conn``` untuk mengonfigurasi penggunaan least connection. 
 <br>
   
-## Problems
-
+## Problems 
+Perlu install ulang yang memakan waktu setiap membuka GNS sehingga memakan banyak waktu.
 ## Revisions (if any)
+Pengerjaan no 14-20 dilakukan di waktu revisi
